@@ -2,7 +2,7 @@ import { useState } from "react";
 // import { DatePicker, Space } from "antd";
 
 // const { RangePicker } = DatePicker;
-// import "./rangeDate.css";
+import "./rangeDate.css";
 
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
@@ -35,7 +35,7 @@ const ChooseDate = () => {
         <div className="pb-1">Trả Phòng</div>
         <div className="text-gray-400 text-sm">Thêm Ngày</div>
 
-        <div className="  bg-gray-500 search">
+        <div className="  bg-gray-500 absolute text-red-500">
           <DateRangePicker
             ranges={[selectionRange]}
             minDate={new Date()}

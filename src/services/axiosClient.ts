@@ -1,12 +1,12 @@
 import axios, { AxiosError } from "axios";
-
+import { CONFIG_URL } from "enum/airbnb.enum";
 import store from "store";
 
+// Setup cấu hình mặc định cho axios
 const axiosClient = axios.create({
-  baseURL: "airbnb.cybersoft.edu.vn/api",
+  baseURL: CONFIG_URL.BASE_URL,
   headers: {
-    tokenByClass:
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCAyMiIsIkhldEhhblN0cmluZyI6IjMwLzExLzIwMjIiLCJIZXRIYW5UaW1lIjoiMTY2OTc2NjQwMDAwMCIsIm5iZiI6MTY0MTgzNDAwMCwiZXhwIjoxNjY5OTE0MDAwfQ.mTJaYLlwFuAG-SiC8fUlH-taW8wV0VAASxdCPf54RX8",
+    tokenByClass: CONFIG_URL.BASE_TOKEN,
   },
 });
 
@@ -14,6 +14,7 @@ interface ErrorResponse {
   content: string;
 }
 
+// setup response interceptor
 axiosClient.interceptors.response.use(
   (response) => {
     return response.data.content;
@@ -23,13 +24,15 @@ axiosClient.interceptors.response.use(
   }
 );
 
+// setup request interceptor
 axiosClient.interceptors.request.use((config) => {
   if (config.headers) {
-    const { accessToken } = store.getState().login.currentUser;
+    const { accessToken } = store.getState().auth.currentUser;
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
   }
+
   return config;
 });
 

@@ -1,10 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
-import login from "slices/auth";
 
+import auth from "slices/auth";
+import signup from "slices/signup";
+
+// configureStore: mặc định đã được setup redux devtool và redux thunk
 const store = configureStore({
   reducer: {
-    login,
+    auth,
+    signup,
   },
+  // devTools: false // có enable devtool hay không, mặc định là true
 });
 
 export type RootState = ReturnType<typeof store.getState>;

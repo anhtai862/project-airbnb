@@ -1,23 +1,26 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { Action } from "enum/airbnb.enum";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { CurrentUser } from "interfaces/info-CurrentUser";
-import loginAPI from "services/loginAPI";
 
-interface ICurrentUser {
+import authAPI from "services/authAPI";
+
+interface AuthState {
+  // thông tin của user đăng nhập
   currentUser: CurrentUser;
   isLoading: boolean;
   error?: string;
 }
 
-const initialState: ICurrentUser = {
+const initialState: AuthState = {
   currentUser: JSON.parse(localStorage.getItem("user") as string) || {},
-  isLoading: true,
+  isLoading: false,
   error: "",
 };
 
+// thunk actions
+// dispatch(login(values))
 export const login = createAsyncThunk("auth/login", async (values: any) => {
   try {
-    const data = await loginAPI.login(values);
+    const data = await authAPI.login(values);
     // Lưu thông tin đăng nhập vào localStorage
     localStorage.setItem("user", JSON.stringify(data));
     return data;
@@ -26,29 +29,34 @@ export const login = createAsyncThunk("auth/login", async (values: any) => {
   }
 });
 
-const loginSlice = createSlice({
-  name: Action.LOGIN,
+const authSlice = createSlice({
+  name: "auth",
   initialState,
   reducers: {
-    logout: (state: ICurrentUser) => {
+    logout: (state: AuthState) => {
+      // Xoá thông tin user khỏi localStorage
       localStorage.removeItem("user");
+      // set state currentUser về object rỗng
       return { ...state, currentUser: {} as CurrentUser };
     },
   },
   extraReducers: (builder) => {
-    //login/pending
+    // auth/login/pending
     builder.addCase(login.pending, (state) => {
       return { ...state, isLoading: true, error: "" };
     });
-    //login/fulfilled
+    // auth/login/fulfilled
     builder.addCase(login.fulfilled, (state, { payload }) => {
       return { ...state, isLoading: false, currentUser: payload };
-    }); //login/rejected
+    });
+    // auth/login/rejected
     builder.addCase(login.rejected, (state, { error }) => {
       return { ...state, isLoading: false, error: error.message };
     });
   },
 });
 
-export const { logout } = loginSlice.actions;
-export default loginSlice.reducer;
+// export actions
+export const { logout } = authSlice.actions;
+
+export default authSlice.reducer;
